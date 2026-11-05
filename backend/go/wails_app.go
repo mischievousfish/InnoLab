@@ -71,3 +71,63 @@ func (app *App) SaveRoadmapTask(payload interface{}) (map[string]interface{}, er
 func (app *App) GetRoadmapTasks(projectID string) ([]interface{}, error) {
 	return []interface{}{}, nil
 }
+
+func (app *App) SaveInventoryItem(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/inventory/items", payload)
+}
+
+func (app *App) SaveBudgetExpense(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/budget/expenses", payload)
+}
+
+func (app *App) AnalyzeMethodology(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/research/analyze-methodology", payload)
+}
+
+func (app *App) AssessRisk(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/research/assess-risk", payload)
+}
+
+func (app *App) CreateProjectExport(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/reports/create", payload)
+}
+
+func (app *App) EnableJudgeAccess(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/judge-access", payload)
+}
+
+func (app *App) SaveReference(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/references", payload)
+}
+
+func (app *App) FormatReference(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/references/format", payload)
+}
+
+func (app *App) GetProjectOverview(projectID string) (map[string]interface{}, error) {
+	return app.postToNim("/api/projects/overview", map[string]interface{}{"projectId": projectID})
+}
+
+func (app *App) SaveSchematic(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/hardware/schematics", payload)
+}
+
+func (app *App) SaveChemical(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/safety/chemicals", payload)
+}
+
+func (app *App) SaveSafetyAudit(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/safety/audits", payload)
+}
+
+func (app *App) SaveMentorMeeting(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/mentor/meetings", payload)
+}
+
+func (app *App) SavePrototypeVersion(payload interface{}) (map[string]interface{}, error) {
+	return app.postToNim("/api/prototypes/versions", payload)
+}
+
+func (app *App) GetTeamContributions(projectID string) (map[string]interface{}, error) {
+	return app.postToNim("/api/team/contributions", map[string]interface{}{"projectId": projectID})
+}
