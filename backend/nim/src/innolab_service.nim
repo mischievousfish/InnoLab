@@ -144,7 +144,14 @@ proc handleRequest(req: Request) {.async.} =
       if extension notin allowed:
         await req.respond(Http400, $(%*{"message": "Định dạng thiết kế không được hỗ trợ."}), newHttpHeaders({"Content-Type": "application/json"}))
         return
-    discard await pocketBase.create("hardware_schematics", %*{"project": body{"projectId"}.getStr("default-project"), "version_tag": body{"versionTag"}.getStr(), "component_name": body{"componentName"}.getStr(), "file_url": body{"fileName"}.getStr(), "simulation_link": body{"simulationLink"}.getStr(), "notes": body{"notes"}.getStr()})
+    let record = %*{"project_id": body{"projectId"}.getStr("default-project"), "version_tag": body{"versionTag"}.getStr(), "component_name": body{"componentName"}.getStr(), "simulation_link": body{"simulationLink"}.getStr(), "notes": body{"notes"}.getStr()}
+    var files = newJArray()
+    if fileName.len > 0 and body{"fileData"}.getStr().len > 0:
+      files.add(%*{"field": "file_url", "name": body{"fileName"}.getStr(), "contentType": body{"fileType"}.getStr("application/octet-stream"), "base64": body{"fileData"}.getStr()})
+    if files.len > 0:
+      discard await pocketBase.createWithFiles("hardware_schematics", record, files)
+    else:
+      discard await pocketBase.create("hardware_schematics", record)
     await req.respond(Http201, $(%*{"message": "Đã lưu sơ đồ thiết kế."}), newHttpHeaders({"Content-Type": "application/json"}))
     return
 
@@ -156,13 +163,13 @@ proc handleRequest(req: Request) {.async.} =
 
   if req.reqMethod == HttpPost and req.url.path == "/api/safety/audits":
     let body = parseJson(req.body)
-    discard await pocketBase.create("safety_audits", %*{"project": body{"projectId"}.getStr("default-project"), "audit_date": body{"auditDate"}.getStr(), "checklist_data": body{"checklistData"}, "auditor_name": body{"auditorName"}.getStr(), "status": body{"status"}.getStr()})
+    discard await pocketBase.create("safety_audits", %*{"project_id": body{"projectId"}.getStr("default-project"), "audit_date": body{"auditDate"}.getStr(), "checklist_data": body{"checklistData"}, "auditor_name": body{"auditorName"}.getStr(), "status": body{"status"}.getStr()})
     await req.respond(Http201, $(%*{"message": "Đã lưu kiểm toán phòng lab."}), newHttpHeaders({"Content-Type": "application/json"}))
     return
 
   if req.reqMethod == HttpPost and req.url.path == "/api/mentor/meetings":
     let body = parseJson(req.body)
-    let meeting = await pocketBase.create("mentor_meetings", %*{"project": body{"projectId"}.getStr("default-project"), "meeting_date": body{"meetingDate"}.getStr(), "mentor_name": body{"mentorName"}.getStr(), "key_feedback": body{"keyFeedback"}.getStr(), "action_items": body{"actionItems"}, "next_meeting_schedule": body{"nextMeetingSchedule"}.getStr()})
+    let meeting = await pocketBase.create("mentor_meetings", %*{"project_id": body{"projectId"}.getStr("default-project"), "meeting_date": body{"meetingDate"}.getStr(), "mentor_name": body{"mentorName"}.getStr(), "key_feedback": body{"keyFeedback"}.getStr(), "action_items": body{"actionItems"}, "next_meeting_schedule": body{"nextMeetingSchedule"}.getStr()})
     for item in body{"actionItems"}.getElems():
       if item{"title"}.getStr().len > 0:
         discard await pocketBase.create("roadmap_tasks", %*{"project": body{"projectId"}.getStr("default-project"), "title": item{"title"}.getStr(), "stage": "analysis", "priority": "medium", "deadline": item{"deadline"}.getStr(), "assignee": item{"assignee"}.getStr()})
@@ -171,8 +178,38 @@ proc handleRequest(req: Request) {.async.} =
 
   if req.reqMethod == HttpPost and req.url.path == "/api/prototypes/versions":
     let body = parseJson(req.body)
-    discard await pocketBase.create("prototype_versions", %*{"project": body{"projectId"}.getStr("default-project"), "version_number": body{"versionNumber"}.getStr(), "release_date": body{"releaseDate"}.getStr(), "changelog_summary": body{"changelogSummary"}.getStr(), "failed_reasons": body{"failedReasons"}.getStr()})
+    let record = %*{"project_id": body{"projectId"}.getStr("default-project"), "version_number": body{"versionNumber"}.getStr(), "release_date": body{"releaseDate"}.getStr(), "changelog_summary": body{"changelogSummary"}.getStr(), "failed_reasons": body{"failedReasons"}.getStr()}
+    var files = newJArray()
+    for image in body{"images"}.getElems():
+      files.add(%*{"field": "images", "name": image{"name"}.getStr(), "contentType": image{"contentType"}.getStr("application/octet-stream"), "base64": image{"base64"}.getStr()})
+    if files.len > 0:
+      discard await pocketBase.createWithFiles("prototype_versions", record, files)
+    else:
+      discard await pocketBase.create("prototype_versions", record)
     await req.respond(Http201, $(%*{"message": "Đã lưu phiên bản nguyên mẫu."}), newHttpHeaders({"Content-Type": "application/json"}))
+    return
+
+  if req.reqMethod == HttpPost and req.url.path == "/api/hardware/data":
+    let body = parseJson(req.body)
+    let projectId = body{"projectId"}.getStr("default-project")
+    let filter = &"project_id = '{projectId}'"
+    var schematics = await pocketBase.list("hardware_schematics", filter)
+    let chemicals = await pocketBase.list("chemical_inventory")
+    let audits = await pocketBase.list("safety_audits", filter)
+    let meetings = await pocketBase.list("mentor_meetings", filter)
+    let versions = await pocketBase.list("prototype_versions", filter)
+    let apiBase = pocketBase.baseUrl
+    for item in schematics["items"].getElems():
+      let filename = item{"file_url"}.getStr()
+      if filename.len > 0:
+        item["fileDownloadUrl"] = %(apiBase & "/api/files/hardware_schematics/" & item{"id"}.getStr() & "/" & encodeUrl(filename))
+    for item in versions["items"].getElems():
+      var imageUrls = newJArray()
+      if item.hasKey("images") and item["images"].kind == JArray:
+        for filename in item["images"].getElems():
+          imageUrls.add(%(apiBase & "/api/files/prototype_versions/" & item{"id"}.getStr() & "/" & encodeUrl(filename.getStr())))
+      item["imageUrls"] = imageUrls
+    await req.respond(Http200, $(%*{"schematics": schematics{"items"}, "chemicals": chemicals{"items"}, "audits": audits{"items"}, "meetings": meetings{"items"}, "versions": versions{"items"}}), newHttpHeaders({"Content-Type": "application/json"}))
     return
 
   if req.reqMethod == HttpPost and req.url.path == "/api/team/contributions":

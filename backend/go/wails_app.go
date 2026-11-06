@@ -131,3 +131,7 @@ func (app *App) SavePrototypeVersion(payload interface{}) (map[string]interface{
 func (app *App) GetTeamContributions(projectID string) (map[string]interface{}, error) {
 	return app.postToNim("/api/team/contributions", map[string]interface{}{"projectId": projectID})
 }
+
+func (app *App) GetHardwareData(projectID string) (map[string]interface{}, error) {
+	return app.postToNim("/api/hardware/data", map[string]interface{}{"projectId": projectID})
+}

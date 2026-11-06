@@ -95,3 +95,4 @@ export async function saveSafetyAudit(payload) { return requireNative("SaveSafet
 export async function saveMentorMeeting(payload) { return requireNative("SaveMentorMeeting")["SaveMentorMeeting"](payload); }
 export async function savePrototypeVersion(payload) { return requireNative("SavePrototypeVersion")["SavePrototypeVersion"](payload); }
 export async function getTeamContributions(projectId) { return requireNative("GetTeamContributions")["GetTeamContributions"](projectId); }
+export async function getHardwareData(projectId) { return requireNative("GetHardwareData")["GetHardwareData"](projectId); }
