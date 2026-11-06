@@ -1,6 +1,7 @@
 import std/[asynchttpserver, asyncdispatch, json, os, strformat, strutils, sha1, times, tables]
 import models
 import pocketbase_client
+import admin/admin_service
 
 const servicePort = 8091
 let pocketBase = newPocketBaseClient(getEnv("POCKETBASE_URL", "http://127.0.0.1:8090"))
@@ -236,6 +237,9 @@ proc handleRequest(req: Request) {.async.} =
       value["contributionPercentage"] = %(if totalActivity == 0: 0 else: (activity * 100) div totalActivity)
       memberArray.add(value)
     await req.respond(Http200, $(%*{"members": memberArray}), newHttpHeaders({"Content-Type": "application/json"}))
+    return
+
+  if await handleAdminRequest(req):
     return
 
   await req.respond(Http404, $(%*{"message": "Endpoint không tồn tại."}), newHttpHeaders({"Content-Type": "application/json"}))

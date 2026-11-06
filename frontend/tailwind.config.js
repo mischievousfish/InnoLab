@@ -12,8 +12,9 @@ export default {
         rope: '#D0C2B6'
       },
       fontFamily: {
-        gallery: ['SVN Gallery Modern', 'Georgia', 'serif'],
-        sans: ['Aptos', 'Segoe UI', 'sans-serif']
+        cotdien: ['CotdienTypeface'],
+        gallery: ['CotdienTypeface'],
+        sans: ['CotdienTypeface']
       },
       borderRadius: {
         sm: '2px',

@@ -1,0 +1,59 @@
+<main class="admin-console">
+  <header class="admin-masthead">
+    <div><p class="admin-kicker">INNOLAB / CONTROL PLANE / 01</p><h1>System Admin</h1><p class="admin-lede">Quản trị tài khoản, tính toàn vẹn dữ liệu và vận hành kho nghiên cứu cục bộ.</p></div>
+    <div class="admin-actions"><span class="admin-role-stamp">ADMIN AUTHENTICATED</span><button class="admin-button admin-button-quiet" type="button" data-admin-refresh>↻ Đồng bộ</button><button class="admin-button admin-button-quiet" type="button" data-admin-signout>Đăng xuất</button></div>
+    <span class="admin-masthead-mark" aria-hidden="true">SYS_01</span>
+  </header>
+
+  <section class="admin-overview" aria-label="Tổng quan hệ thống">
+    <article class="admin-metric"><span>TÀI KHOẢN</span><strong data-stat="users">—</strong><small>records PocketBase</small></article>
+    <article class="admin-metric admin-metric-accent"><span>CHỜ DUYỆT</span><strong data-stat="pending">—</strong><small>projects pending</small></article>
+    <article class="admin-metric"><span>WORM AUDIT</span><strong data-stat="verified">—</strong><small>baseline đã xác minh</small></article>
+    <article class="admin-metric"><span>LOCAL STORE</span><strong data-stat="storage">—</strong><small data-stat="storage-detail">đang kiểm tra</small></article>
+  </section>
+
+  <nav class="admin-tabs" role="tablist" aria-label="Khu vực quản trị">
+    <button class="admin-tab is-active" type="button" role="tab" aria-selected="true" data-admin-tab="users">01 / Người dùng</button>
+    <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="audit">02 / WORM Audit</button>
+    <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="projects">03 / Duyệt đề tài</button>
+    <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="system">04 / Hệ thống</button>
+  </nav>
+
+  <section class="admin-section" data-admin-panel="users" role="tabpanel">
+    <header class="admin-section-head"><div><p class="admin-kicker">ACCESS / ROLES</p><h2>User & Role Matrix</h2></div><label class="admin-search">Lọc tài khoản<input type="search" data-user-search placeholder="Tên hoặc email"></label></header>
+    <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Tài khoản</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody data-user-rows><tr><td colspan="5" class="admin-empty">Đang tải dữ liệu PocketBase…</td></tr></tbody></table></div>
+    <div class="admin-token-strip"><div><p class="admin-kicker">JUDGE ACCESS / READ ONLY</p><strong>Cấp mã truy cập giám khảo</strong><p>Mã chỉ hiển thị một lần sau khi được backend lưu hash.</p></div><div class="admin-token-controls"><select data-judge-project aria-label="Chọn đề tài"><option value="">Chọn đề tài</option></select><button class="admin-button admin-button-primary" type="button" data-issue-token>Cấp mã</button></div><output class="admin-token-result" data-issued-token hidden></output></div>
+  </section>
+
+  <section class="admin-section" data-admin-panel="audit" role="tabpanel" hidden>
+    <header class="admin-section-head"><div><p class="admin-kicker">IMMUTABILITY / SHA-1 BASELINE</p><h2>Security Audit Log</h2></div><p class="admin-legend"><i class="audit-key-verified"></i> Khớp baseline <i class="audit-key-warning"></i> Chưa xác minh / sai lệch</p></header>
+    <div class="audit-timeline" data-audit-rows><p class="admin-empty">Đang tải logbook entries…</p></div>
+    <p class="admin-footnote">Chỉ các bản ghi có `integrity_hash` được tạo theo quy tắc canonical SHA-1 mới có thể đối chiếu; log cũ không có baseline sẽ được đánh dấu UNVERIFIED.</p>
+  </section>
+
+  <section class="admin-section" data-admin-panel="projects" role="tabpanel" hidden>
+    <header class="admin-section-head"><div><p class="admin-kicker">REVIEW QUEUE / PROJECTS</p><h2>Project Moderation</h2></div><span class="admin-queue-count" data-project-count>0 QUEUED</span></header>
+    <div class="project-queue" data-project-rows><p class="admin-empty">Đang tải projects…</p></div>
+  </section>
+
+  <section class="admin-section" data-admin-panel="system" role="tabpanel" hidden>
+    <header class="admin-section-head"><div><p class="admin-kicker">LOCAL OPERATIONS / POCKETBASE</p><h2>Storage & Maintenance</h2></div><span class="admin-system-state" data-system-state>Đang kiểm tra</span></header>
+    <div class="admin-system-grid">
+      <article class="admin-system-readout"><span>DATA DIRECTORY</span><strong data-storage-path>Chưa cấu hình</strong><small data-storage-files>—</small></article>
+      <article class="admin-system-readout"><span>DATABASE FOOTPRINT</span><strong data-storage-size>—</strong><small>Đo từ thư mục PocketBase trên máy chủ cục bộ</small></article>
+    </div>
+    <div class="admin-maintenance-actions"><button class="admin-button admin-button-primary" type="button" data-create-backup>⇩ Sao lưu dữ liệu</button><button class="admin-button admin-button-quiet" type="button" data-export-bundle>Xuất JSON bundle</button></div>
+    <div class="admin-reset-zone"><div><p class="admin-kicker">DESTRUCTIVE OPERATION</p><h3>Reset dữ liệu nghiệp vụ</h3><p>Tạo backup trước, xóa records dự án và dữ liệu nghiên cứu; giữ schema cùng tài khoản admin.</p></div><button class="admin-button admin-button-danger" type="button" data-open-reset>Reset hệ thống</button></div>
+  </section>
+
+  <p class="admin-status" data-admin-status role="status" aria-live="polite"></p>
+  <div class="admin-confirm" data-reset-dialog hidden>
+    <button class="admin-confirm-backdrop" type="button" data-cancel-reset aria-label="Đóng xác nhận reset"></button>
+    <form class="admin-confirm-panel" data-reset-form role="dialog" aria-modal="true" aria-labelledby="reset-title">
+      <p class="admin-kicker">BACKUP REQUIRED / IRREVERSIBLE</p><h2 id="reset-title">Xác nhận reset dữ liệu</h2>
+      <p>Backend sẽ tạo backup trước khi xóa. Tài khoản admin và schema được giữ lại.</p>
+      <label>Nhập chính xác <strong>RESET INNOLAB</strong><input name="confirmation" autocomplete="off" required></label>
+      <div><button class="admin-button admin-button-quiet" type="button" data-cancel-reset>Hủy</button><button class="admin-button admin-button-danger" type="submit">Backup & reset</button></div>
+    </form>
+  </div>
+</main>

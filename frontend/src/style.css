@@ -1,6 +1,8 @@
 @font-face {
-  font-family: "SVN Gallery Modern";
-  src: url("/fonts/SVN-Gallery Modern.otf") format("opentype");
+  font-family: "CotdienTypeface";
+  src: url("/fonts/Cotdien Typeface.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -11,15 +13,19 @@
   --signal-coral: #D36353;
   --sailcloth-cream: #F4F1EA;
   --weathered-rope: #D0C2B6;
-  --gallery-serif: "SVN Gallery Modern", Georgia, serif;
-  --interface-sans: "Aptos", "Segoe UI", sans-serif;
-  font-family: var(--interface-sans);
+  --cotdien-typeface: "CotdienTypeface";
+  --gallery-serif: var(--cotdien-typeface);
+  --interface-sans: var(--cotdien-typeface);
+  font-family: var(--cotdien-typeface);
   color: var(--harbor-navy);
   background: var(--sailcloth-cream);
   font-synthesis: none;
 }
+*, *::before, *::after, html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, td, th, label {
+  font-family: var(--cotdien-typeface) !important;
+}
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
+body { margin: 0; min-width: 320px; min-height: 100vh; font-size: 14px; line-height: 1.5; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 h2, h3 { letter-spacing: 0; }
