@@ -42,8 +42,9 @@ export function renderDataVault(container) {
   const chart = new Chart(chartCanvas, {
     type: "line",
     data: { datasets: [{ label: "Y", data: [], borderColor: "#536C78", backgroundColor: "rgba(83,108,120,.16)", tension: .2, pointRadius: 3 }] },
-    options: { animation: false, responsive: true, maintainAspectRatio: false, scales: { x: { type: "linear", title: { display: true, text: "X" } }, y: { title: { display: true, text: "Y" } } }, plugins: { legend: { display: false } } }
+    options: { animation: false, responsive: true, maintainAspectRatio: false, font: { family: "RanoyaRegular" }, scales: { x: { type: "linear", title: { display: true, text: "X" } }, y: { title: { display: true, text: "Y" } } }, plugins: { legend: { display: false } } }
   });
+  document.fonts.ready.then(() => chart.update());
 
   function getPoints() {
     return [...rows.querySelectorAll("tr")].map((row) => ({

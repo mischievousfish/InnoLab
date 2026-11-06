@@ -12,9 +12,10 @@ export default {
         rope: '#D0C2B6'
       },
       fontFamily: {
-        cotdien: ['CotdienTypeface'],
-        gallery: ['CotdienTypeface'],
-        sans: ['CotdienTypeface']
+        ranoya: ['RanoyaRegular'],
+        sans: ['RanoyaRegular'],
+        serif: ['RanoyaRegular'],
+        mono: ['RanoyaRegular']
       },
       borderRadius: {
         sm: '2px',
